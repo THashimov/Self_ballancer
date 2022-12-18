@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "gpio_ports.h": "c",
+        "rcc.h": "c",
+        "gpio.h": "c",
+        "lcd.h": "c"
+    }
+}
