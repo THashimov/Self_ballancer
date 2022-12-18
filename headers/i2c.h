@@ -16,11 +16,11 @@
 
 #define ACK 10
 #define STOP 9
-#define START 8bob
-bob
+#define START 8
 
 #define TXE 7
 #define BTF 2
+#define START_SENT 1
 
 /// Sequence as follows
 /// Start i2c
@@ -84,27 +84,59 @@ void set_trise(unsigned char trise) {
     *i2c_trise |= trise;
 }
 
+
 void init_i2c(unsigned char freq) {
     reset_i2c();
+    disable_i2c();
     set_i2c_freq(freq);
     float tpclk1 = calc_tpclk1(freq);
     int ccr = (SCL + SCHL) / tpclk1;
-    disable_i2c();
     init_i2c_ccr(ccr);
     char trise = calc_trise(tpclk1);
     set_trise(trise);
     enable_i2c();
 }
 
-void addr_sent() {
-    if ((*i2c_sr1 & (1 << 1)))
+/// Enable ACK and send start condition
+void send_start() {
+    *i2c_cr1 |= (1 << ACK);
+    *i2c_cr1 |= (1 << START);
+}
+
+char check_for_start() {
+    if (*i2c_sr1 & (1 << START_SENT) == 1)
     {
-		turn_pin_on(gpio_port_b, 3);
+        return 1;
     }
 }
 
-void send_start() {
-    *i2c_cr1 |= (1 << START);
+char check_for_txe() {
+    if (*i2c_sr1 & (1 << TXE) == 1)
+    {
+        return 1;
+    }
+}
+
+char check_for_btf() {
+    if (*i2c_sr1 & (1 << BTF) == 1)
+    {
+        return 1;
+    }
+}
+
+void check_for_addr() {
+    if (*i2c_sr1 & (1 << 1) == 0)
+    {
+	    turn_pin_on(gpio_port_b, 3);
+    }
+}
+
+void send_addr(char addr) {
+    *i2c_dr |= (addr << 1);
+}
+
+void send_stop() {
+    *i2c_cr1 |= (1 << STOP);
 }
 
 void send_slave_addr(char addr) {
