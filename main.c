@@ -31,22 +31,22 @@ int main(void) {
 	
     init_gpio(gpio_port_b, gpio_mode_output, gpio_type_push_pull, gpio_speed_high, gpio_pupdr_pull_up, 3);
 
-	init_i2c(I2C_FREQ);
+	// init_i2c(I2C_FREQ);
 
 	// send start
 	// wait for sr1 to toggle the start condition has been set successfully
-	send_start();
-	while (check_for_start() != 1);
+	// send_start();
+	// while (check_for_start() != 1);
 
 	// Wait for txe to be set (this tells us that the data reg is empty so we can write to it)
 	// Send addr to dr
 	// wait for btf to be set
-	while(check_for_txe() != 1);
-	send_addr(0x3F);
+	// while(check_for_txe() != 1);
+	// send_addr(0x3F);
 	// while(check_for_btf() != 1);
 
 	while (1) {	
-		check_for_addr();
+		// check_for_addr();
 
 		// check_for_start();
 		// delay();
